@@ -34,6 +34,12 @@ public class Utils {
   
   /**
    * Get context for a string. Return "" if string not found in text.
+   * 
+   * TODO: Occasionally no context is found when the indexer removed certain
+   * characters which still exist in the source text. E.g. when "... pain, and swelling"
+   * is in the source document, the query "pain and swelling" will return this document.
+   * However, this method will not find the occurence of "pain and swelling" in the
+   * document because of the comma.
    */
   public static String getContext(String string, String text, int characterWindow) {
     
