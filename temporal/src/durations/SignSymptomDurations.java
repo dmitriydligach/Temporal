@@ -26,8 +26,8 @@ public class SignSymptomDurations {
 		final int maxHits = 1000000;
 		final String searchField = "content";
 		final String indexLocation = "/home/dima/data/mimic/index/";
-		final String signAndSymptomFile = "/home/dima/thyme/event-durations/data/unique-sign-symptoms.txt";
-		final String outputDirectory = "/home/dima/out/contexts/";
+		final String signAndSymptomFile = "/home/dima/thyme/duration/data/unique-sign-symptoms.txt";
+		final String outputDirectory = "/home/dima/out/context/";
 		final int contextWindowInCharacters = 50;
 		final List<String> durationIndicators = Arrays.asList("for", "x");
 		
