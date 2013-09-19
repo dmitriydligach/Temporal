@@ -3,9 +3,8 @@ package durations;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.index.CorruptIndexException;
@@ -39,17 +38,14 @@ public class ConjunctionMiner {
     IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
     Set<String> signsAndSymptoms = Utils.readSetValuesFromFile(signAndSymptomFile);
-    Map<String, Set<String>> adjacency = new HashMap<String, Set<String>>(); // adjacency list
+    Set<Set<String>> adjacency = new HashSet<Set<String>>();
     
     for(String ss1 : signsAndSymptoms) {
-      adjacency.put(ss1, new HashSet<String>());
-      
 		  for(String ss2 : signsAndSymptoms) {
-		    
 		    if(ss1.equals(ss2)) {
 		      continue;
 		    }
-
+		    
 		    String queryText = ss1 + " and " + ss2;
 		    PhraseQuery phraseQuery = Utils.makePhraseQuery(queryText, searchField, 0);
 		    TopDocs topDocs = indexSearcher.search(phraseQuery, maxHits);
@@ -57,14 +53,7 @@ public class ConjunctionMiner {
         
         if(scoreDocs.length > 5) {
           writer.write(queryText + ": " + scoreDocs.length + "\n");
-          
-          // about to add ss1 -> ss2 link
-          // check first if ss12 -> ss1 already exists
-          if(adjacency.get(ss2) != null && adjacency.get(ss2).contains(ss1)) {
-            continue;
-          }
-          
-          adjacency.get(ss1).add(ss2);  
+          adjacency.add(new HashSet<String>(Arrays.asList(ss1, ss2)));
         }
 		  }
 		}
@@ -75,18 +64,16 @@ public class ConjunctionMiner {
     indexSearcher.close();
 	}
 	
-	public static void toDot(Map<String, Set<String>> adjacency, String file) throws IOException {
-	  
+	public static void toDot(Set<Set<String>> adjacency, String file) throws IOException {
+
 	  BufferedWriter writer = Utils.getWriter(file, false);
 	  writer.write("graph g {\n");
-	  
-	  for(String from : adjacency.keySet()) {
-	    for(String to : adjacency.get(from)) {
-	      String output = String.format("%s--%s;\n", from, to);
-	      writer.write(output);
-	    }
+
+	  for(Set<String> pair : adjacency) {
+	    String output = String.format("%s--%s;\n", pair.toArray()[0], pair.toArray()[1]);
+	    writer.write(output);
 	  }
-	  
+
 	  writer.write("}\n");
 	  writer.close();
 	}
