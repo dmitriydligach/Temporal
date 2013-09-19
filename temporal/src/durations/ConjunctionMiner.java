@@ -60,10 +60,8 @@ public class ConjunctionMiner {
           
           // about to add ss1 -> ss2 link
           // check first if ss12 -> ss1 already exists
-          if(adjacency.get(ss2) != null) {
-            if(adjacency.get(ss2).contains(ss1)) {
-              continue;
-            }
+          if(adjacency.get(ss2) != null && adjacency.get(ss2).contains(ss1)) {
+            continue;
           }
           
           adjacency.get(ss1).add(ss2);  
