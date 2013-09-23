@@ -32,12 +32,16 @@ public class ConjunctionMiner {
 		final String indexLocation = "/home/dima/data/mimic/index/";
 		final String signAndSymptomFile = "/home/dima/thyme/duration/data/unique-sign-symptoms.txt";
 		final String outputFile = "/home/dima/out/conjunction/counts.txt";
+		final String dotFile = "/home/dima/out/conjunction/graph.dot";
+		final int minCoocurence = 5; // discard conjunctions below this frequency threshold
 		
 		BufferedWriter writer = Utils.getWriter(outputFile, false);
     IndexReader indexReader = IndexReader.open(FSDirectory.open(new File(indexLocation)));
     IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
     Set<String> signsAndSymptoms = Utils.readSetValuesFromFile(signAndSymptomFile);
+
+    // set of co-occuring symptom pairs, e.g. {{pain, anxiety}, {abuse, depression}, ...}
     Set<Set<String>> adjacency = new HashSet<Set<String>>();
     
     for(String ss1 : signsAndSymptoms) {
@@ -51,19 +55,22 @@ public class ConjunctionMiner {
 		    TopDocs topDocs = indexSearcher.search(phraseQuery, maxHits);
         ScoreDoc[] scoreDocs = topDocs.scoreDocs;
         
-        if(scoreDocs.length > 5) {
+        if(scoreDocs.length > minCoocurence) {
           writer.write(queryText + ": " + scoreDocs.length + "\n");
           adjacency.add(new HashSet<String>(Arrays.asList(ss1, ss2)));
         }
 		  }
 		}
 		
-    toDot(adjacency, "/home/dima/out/conjunction/graph.dot");
+    toDot(adjacency, dotFile);
     
 		writer.close();
     indexSearcher.close();
 	}
-	
+
+	/**
+	 * Convert set of co-occuring symptoms into graphviz dot format.
+	 */
 	public static void toDot(Set<Set<String>> adjacency, String file) throws IOException {
 
 	  BufferedWriter writer = Utils.getWriter(file, false);
