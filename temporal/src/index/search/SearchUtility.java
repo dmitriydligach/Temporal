@@ -25,7 +25,7 @@ public class SearchUtility {
 
 		final int maxHits = 250;
 		final String searchField = "content";
-		final String indexLocation = "/home/dima/data/mimic/index/";
+		final String indexLocation = "/Users/Dima/Boston/Data/Mimic/index/";
 
 		String queryText = JOptionPane.showInputDialog("Enter query");
 		
