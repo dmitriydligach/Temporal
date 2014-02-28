@@ -29,11 +29,10 @@ public class ConjunctionMiner {
 
 		final int maxHits = 1000000;
 		final String searchField = "content";
-		final String indexLocation = "/home/dima/data/mimic/index/";
-		final String signAndSymptomFile = "/home/dima/thyme/duration/data/unique-sign-symptoms.txt";
-		final String outputFile = "/home/dima/out/conjunction/counts.txt";
-		final String dotFile = "/home/dima/out/conjunction/graph.dot";
-		final int minCoocurence = 5; // discard conjunctions below this frequency threshold
+		final String indexLocation = "/Users/Dima/Boston/Data/Mimic/Index/";
+		final String signAndSymptomFile = "/Users/Dima/Boston/Thyme/Duration/Data/List/unique-disease-disorder.txt";
+		final String outputFile = "/Users/Dima/Boston/Output/counts.txt";
+		final int minCoocurence = 1; // discard conjunctions below this frequency threshold
 		
 		BufferedWriter writer = Utils.getWriter(outputFile, false);
     IndexReader indexReader = IndexReader.open(FSDirectory.open(new File(indexLocation)));
@@ -56,14 +55,12 @@ public class ConjunctionMiner {
         ScoreDoc[] scoreDocs = topDocs.scoreDocs;
         
         if(scoreDocs.length > minCoocurence) {
-          writer.write(queryText + ": " + scoreDocs.length + "\n");
+          writer.write(ss1 + "|" + ss2 + "|" + scoreDocs.length + "\n");
           adjacency.add(new HashSet<String>(Arrays.asList(ss1, ss2)));
         }
 		  }
 		}
 		
-    toDot(adjacency, dotFile);
-    
 		writer.close();
     indexSearcher.close();
 	}
